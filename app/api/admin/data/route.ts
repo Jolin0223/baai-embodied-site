@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 
-// 1. 嵌入你的完整 mock 数据（已替换所有内容）
+// 新增：解决静态导出冲突
+export const dynamic = 'force-static';
+export const revalidate = 0;
+
+// 1. 嵌入你的完整 mock 数据
 const mockData = {
   "brainVideos": [
     {
@@ -243,13 +247,13 @@ const mockData = {
   ]
 };
 
-// 2. 声明使用 Edge 运行时（Cloudflare 必须）
+// 2. 声明使用 Edge 运行时
 export const runtime = 'edge';
 
-// 3. 内存存储数据（替代文件系统，POST 时更新）
+// 3. 内存存储数据
 let storedData = mockData;
 
-// 4. GET 请求：返回完整数据
+// 4. GET 请求
 export async function GET() {
   try {
     return NextResponse.json(storedData);
@@ -258,11 +262,10 @@ export async function GET() {
   }
 }
 
-// 5. POST 请求：更新内存中的数据
+// 5. POST 请求
 export async function POST(request: Request) {
   try {
     const newData = await request.json();
-    // 合并新数据到现有数据（保持原有结构）
     storedData = { ...storedData, ...newData };
     return NextResponse.json({ success: true });
   } catch (error) {
